@@ -2,7 +2,7 @@ const Footer = () => {
   return (
     <footer className="mt-auto p-6 bg-slate-900 flex flex-col items-center gap-4">
       <p className="text-slate-400 text-xs font-normal">
-        Created by{" "}
+        Copy Deck created by{" "}
         <span className="text-slate-200 font-semibold">
           Andrew Pungprakearti
         </span>

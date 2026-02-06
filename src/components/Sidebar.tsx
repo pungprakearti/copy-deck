@@ -2,6 +2,7 @@ import { useState } from "react";
 import { PencilIcon, TrashIcon, CheckIcon, XIcon, GripIcon } from "./Icons";
 import AddDeck from "./AddDeck";
 import { Droppable, Draggable } from "@hello-pangea/dnd";
+import pkg from "../../package.json";
 import type { DraggableStyle, DraggableStateSnapshot } from "@hello-pangea/dnd";
 
 interface SidebarProps {
@@ -184,6 +185,7 @@ const Sidebar = ({
         </Droppable>
         <AddDeck onAdd={onAddDeck} />
       </div>
+      <span className="text-xs text-slate-500 p-2">v{pkg.version}</span>
     </div>
   );
 };
