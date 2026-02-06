@@ -69,7 +69,11 @@ const Card = ({
           <div
             {...dragHandleProps}
             className={`cursor-grab active:cursor-grabbing transition-opacity duration-200 p-1 -ml-1
-              ${isEditing ? "opacity-0 pointer-events-none" : "opacity-0 group-hover:opacity-100 text-slate-500 hover:text-blue-400"}`}
+              ${
+                isEditing
+                  ? "opacity-0 pointer-events-none"
+                  : "opacity-0 group-hover:opacity-100 text-slate-500 hover:text-blue-400"
+              }`}
             title="Drag to reorder"
           >
             <GripIcon />
@@ -119,7 +123,8 @@ const Card = ({
                   e.stopPropagation();
                   setIsEditing(true);
                 }}
-                className="transition-all duration-200 text-slate-400 opacity-0 group-hover:opacity-40 hover:text-blue-400 hover:opacity-100 scale-90"
+                className="transition-all duration-200 text-slate-400 opacity-0 group-hover:opacity-40
+                              hover:text-blue-400 hover:opacity-100 scale-90"
                 title="Edit entry"
               >
                 <PencilIcon />
@@ -129,7 +134,8 @@ const Card = ({
                   e.stopPropagation();
                   onDelete();
                 }}
-                className="transition-all duration-200 text-slate-400 opacity-0 group-hover:opacity-40 hover:text-red-400 hover:opacity-100 scale-90"
+                className="transition-all duration-200 text-slate-400 opacity-0 group-hover:opacity-40
+                              hover:text-red-400 hover:opacity-100 scale-90"
                 title="Delete entry"
               >
                 <TrashIcon />
@@ -148,14 +154,20 @@ const Card = ({
             if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) handleSave(e);
             if (e.key === "Escape") handleCancel(e);
           }}
-          className="border p-2 w-full min-h-[2.5rem] bg-slate-600 text-slate-100 text-sm rounded shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none overflow-hidden transition-all"
+          className="border p-2 w-full min-h-[2.5rem] bg-slate-600 text-slate-100 text-sm rounded
+                        shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none
+                        overflow-hidden transition-all"
           rows={1}
         />
       ) : (
         <div
           onClick={handleCopy}
           className={`border p-2 w-full min-h-[2.5rem] flex items-center cursor-pointer transition-all duration-200
-            ${copied ? "border-green-500 bg-green-300 text-slate-900" : "border-slate-400 bg-slate-500 text-slate-100 hover:border-slate-100 hover:bg-slate-400"}
+            ${
+              copied
+                ? "border-green-500 bg-green-300 text-slate-900"
+                : "border-slate-400 bg-slate-500 text-slate-100 hover:border-slate-100 hover:bg-slate-400"
+            }
             text-sm break-all rounded shadow-sm whitespace-pre-wrap`}
         >
           {content}

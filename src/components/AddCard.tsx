@@ -11,7 +11,7 @@ const AddCard = ({ onAdd }: AddCardProps) => {
                        text-slate-500 font-bold transition-all duration-200
                        hover:bg-slate-700 hover:text-white hover:border-slate-400"
       >
-        +
+        ADD NEW CARD
       </button>
     </div>
   );
