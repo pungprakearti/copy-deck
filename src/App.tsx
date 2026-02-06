@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Deck from "./components/Deck";
+import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import "./App.css";
 import type { AppData } from "./types/deck";
 
@@ -110,41 +111,81 @@ const App = () => {
 
   const handleDeleteDeck = (name: string) => {
     if (window.confirm(`Delete "${name}" and all its cards?`)) {
+      const deckNames = Object.keys(appData);
+      const remainingDecks = deckNames.filter((k) => k !== name);
+
       setAppData((prev) => {
         const newData = { ...prev };
         delete newData[name];
         return newData;
       });
 
-      const remainingDecks = Object.keys(appData).filter((k) => k !== name);
       setActiveDeckName(remainingDecks[0] || "");
     }
   };
 
+  const onDragEnd = (result: DropResult) => {
+    const { destination, source } = result;
+    if (!destination) return;
+    if (
+      destination.index === source.index &&
+      destination.droppableId === source.droppableId
+    )
+      return;
+
+    if (source.droppableId === "sidebar-decks") {
+      const deckNames = Object.keys(appData);
+      const newDeckNames = [...deckNames];
+      const [removed] = newDeckNames.splice(source.index, 1);
+      newDeckNames.splice(destination.index, 0, removed);
+
+      const newAppData: AppData = {};
+      newDeckNames.forEach((name) => {
+        newAppData[name] = appData[name];
+      });
+
+      setAppData(newAppData);
+      return;
+    }
+
+    if (source.droppableId === "deck-list") {
+      const currentRows = [...appData[activeDeckName].rows];
+      const [removed] = currentRows.splice(source.index, 1);
+      currentRows.splice(destination.index, 0, removed);
+
+      setAppData((prev) => ({
+        ...prev,
+        [activeDeckName]: { ...prev[activeDeckName], rows: currentRows },
+      }));
+    }
+  };
+
   return (
-    <div className="min-h-screen w-full bg-slate-900">
-      <div className="max-w-5xl mx-auto flex flex-col h-screen">
-        <Navbar />
-        <div className="flex flex-row flex-1 overflow-hidden">
-          <Sidebar
-            deckNames={Object.keys(appData)}
-            activeDeck={activeDeckName}
-            setActiveDeck={setActiveDeckName}
-            onRenameDeck={handleRenameDeck}
-            onDeleteDeck={handleDeleteDeck}
-            onAddDeck={handleAddDeck}
-          />
-          <main className="flex-1 overflow-y-auto bg-slate-800">
-            <Deck
-              deckData={appData[activeDeckName]?.rows || []}
-              onUpdateCard={handleUpdateCard}
-              onDeleteCard={handleDeleteCard}
-              onAdd={handleAddCard}
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="min-h-screen w-full bg-slate-900">
+        <div className="max-w-5xl mx-auto flex flex-col h-screen">
+          <Navbar />
+          <div className="flex flex-row flex-1 overflow-hidden">
+            <Sidebar
+              deckNames={Object.keys(appData)}
+              activeDeck={activeDeckName}
+              setActiveDeck={setActiveDeckName}
+              onRenameDeck={handleRenameDeck}
+              onDeleteDeck={handleDeleteDeck}
+              onAddDeck={handleAddDeck}
             />
-          </main>
+            <main className="flex-1 overflow-y-auto bg-slate-800">
+              <Deck
+                deckData={appData[activeDeckName]?.rows || []}
+                onUpdateCard={handleUpdateCard}
+                onDeleteCard={handleDeleteCard}
+                onAdd={handleAddCard}
+              />
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </DragDropContext>
   );
 };
 
