@@ -28,15 +28,20 @@ const Card = ({
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
+      inputRef.current.style.height = "auto";
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
+    }
+  }, [isEditing, tempContent]);
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
       inputRef.current.focus();
       inputRef.current.setSelectionRange(
         tempContent.length,
         tempContent.length,
       );
-      inputRef.current.style.height = "auto";
-      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
     }
-  }, [isEditing, tempContent]);
+  }, [isEditing]);
 
   const handleCopy = async () => {
     if (isEditing || !content) return;
@@ -124,7 +129,7 @@ const Card = ({
                   setIsEditing(true);
                 }}
                 className="transition-all duration-200 text-slate-400 opacity-0 group-hover:opacity-40
-                              hover:text-blue-400 hover:opacity-100 scale-90"
+                               hover:text-blue-400 hover:opacity-100 scale-90"
                 title="Edit entry"
               >
                 <PencilIcon />
@@ -135,7 +140,7 @@ const Card = ({
                   onDelete();
                 }}
                 className="transition-all duration-200 text-slate-400 opacity-0 group-hover:opacity-40
-                              hover:text-red-400 hover:opacity-100 scale-90"
+                               hover:text-red-400 hover:opacity-100 scale-90"
                 title="Delete entry"
               >
                 <TrashIcon />
@@ -156,7 +161,7 @@ const Card = ({
           }}
           className="border p-2 w-full min-h-[2.5rem] bg-slate-600 text-slate-100 text-sm rounded
                         shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none
-                        overflow-hidden transition-all"
+                        overflow-hidden transition-all whitespace-pre-wrap break-words"
           rows={1}
         />
       ) : (
@@ -168,7 +173,7 @@ const Card = ({
                 ? "border-green-500 bg-green-300 text-slate-900"
                 : "border-slate-400 bg-slate-500 text-slate-100 hover:border-slate-100 hover:bg-slate-400"
             }
-            text-sm break-all rounded shadow-sm whitespace-pre-wrap`}
+            text-sm rounded shadow-sm whitespace-pre-wrap break-words`}
         >
           {content}
         </div>
