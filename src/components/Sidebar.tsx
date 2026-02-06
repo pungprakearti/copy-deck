@@ -87,9 +87,18 @@ const Sidebar = ({
                         ref={dragProvided.innerRef}
                         {...dragProvided.draggableProps}
                         onClick={() => !isEditing && setActiveDeck(name)}
-                        className={`group flex items-center justify-between p-3 border-b border-slate-800/50 h-12 box-border outline-none
-                          ${isActive ? "bg-slate-300 text-slate-900" : "bg-slate-600 text-slate-200 hover:bg-slate-800 hover:text-blue-500"}
-                          ${snapshot.isDragging ? "transition-none bg-slate-500 shadow-xl" : "transition-colors"}
+                        className={`group flex items-center justify-between p-3 border-b
+                                      border-slate-800/50 h-12 box-border outline-none
+                          ${
+                            isActive
+                              ? "bg-slate-300 text-slate-900"
+                              : "bg-slate-600 text-slate-200 hover:bg-slate-800 hover:text-blue-500"
+                          }
+                          ${
+                            snapshot.isDragging
+                              ? "transition-none bg-slate-500 shadow-xl"
+                              : "transition-colors"
+                          }
                         `}
                         style={getStyle(
                           dragProvided.draggableProps.style,
@@ -100,7 +109,8 @@ const Sidebar = ({
                           {!isEditing && (
                             <div
                               {...dragProvided.dragHandleProps}
-                              className="mr-2 opacity-0 group-hover:opacity-40 hover:opacity-100 text-slate-400 hover:text-blue-500 transition-opacity p-1"
+                              className="mr-2 opacity-0 group-hover:opacity-40 hover:opacity-100 text-slate-400
+                                            hover:text-blue-500 transition-opacity p-1"
                               title="Drag to reorder"
                             >
                               <GripIcon />
@@ -110,7 +120,8 @@ const Sidebar = ({
                           {isEditing ? (
                             <input
                               autoFocus
-                              className="bg-slate-800 text-white px-1 w-full rounded outline-none border border-blue-400 font-normal text-sm h-6"
+                              className="bg-slate-800 text-white px-1 w-full rounded outline-none border
+                                            border-blue-400 font-normal text-sm h-6"
                               value={tempName}
                               onChange={(e) => setTempName(e.target.value)}
                               onBlur={(e) => handleSave(e, name)}

@@ -5,6 +5,7 @@ import Deck from "./components/Deck";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
 import "./App.css";
 import type { AppData } from "./types/deck";
+import Footer from "./components/Footer";
 
 const App = () => {
   const [appData, setAppData] = useState<AppData>(() => {
@@ -161,31 +162,34 @@ const App = () => {
   };
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="min-h-screen w-full bg-slate-900">
+    <>
+      <div className="min-h-screen w-full bg-slate-950">
         <div className="max-w-5xl mx-auto flex flex-col h-screen">
           <Navbar />
-          <div className="flex flex-row flex-1 overflow-hidden">
-            <Sidebar
-              deckNames={Object.keys(appData)}
-              activeDeck={activeDeckName}
-              setActiveDeck={setActiveDeckName}
-              onRenameDeck={handleRenameDeck}
-              onDeleteDeck={handleDeleteDeck}
-              onAddDeck={handleAddDeck}
-            />
-            <main className="flex-1 overflow-y-auto bg-slate-800">
-              <Deck
-                deckData={appData[activeDeckName]?.rows || []}
-                onUpdateCard={handleUpdateCard}
-                onDeleteCard={handleDeleteCard}
-                onAdd={handleAddCard}
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="flex flex-row flex-1 overflow-hidden">
+              <Sidebar
+                deckNames={Object.keys(appData)}
+                activeDeck={activeDeckName}
+                setActiveDeck={setActiveDeckName}
+                onRenameDeck={handleRenameDeck}
+                onDeleteDeck={handleDeleteDeck}
+                onAddDeck={handleAddDeck}
               />
-            </main>
-          </div>
+              <main className="flex-1 overflow-y-auto bg-slate-800">
+                <Deck
+                  deckData={appData[activeDeckName]?.rows || []}
+                  onUpdateCard={handleUpdateCard}
+                  onDeleteCard={handleDeleteCard}
+                  onAdd={handleAddCard}
+                />
+              </main>
+            </div>
+          </DragDropContext>
+          <Footer />
         </div>
       </div>
-    </DragDropContext>
+    </>
   );
 };
 
