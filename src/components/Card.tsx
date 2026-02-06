@@ -1,13 +1,20 @@
 import { useState, useRef, useEffect } from "react";
 import type { CardData } from "../types/deck";
-import { PencilIcon, TrashIcon, CheckIcon, XIcon } from "./Icons";
+import { PencilIcon, TrashIcon, CheckIcon, XIcon, GripIcon } from "./Icons";
 
 interface CardProps extends CardData {
   onSave: (newLabel: string, newContent: string) => void;
   onDelete: () => void;
+  dragHandleProps?: any;
 }
 
-const Card = ({ label, content, onSave, onDelete }: CardProps) => {
+const Card = ({
+  label,
+  content,
+  onSave,
+  onDelete,
+  dragHandleProps,
+}: CardProps) => {
   const [copied, setCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [tempLabel, setTempLabel] = useState(label);
@@ -56,20 +63,31 @@ const Card = ({ label, content, onSave, onDelete }: CardProps) => {
   };
 
   return (
-    <div className="group flex flex-col gap-1 w-full">
+    <div className="group flex flex-col gap-1 w-full relative">
       <div className="flex justify-between items-end text-sm font-semibold text-slate-400 px-1 min-h-[1.5rem]">
-        {isEditing ? (
-          <input
-            type="text"
-            value={tempLabel}
-            onChange={(e) => setTempLabel(e.target.value)}
-            className="bg-transparent border-b border-blue-400 text-blue-400 focus:outline-none w-1/2 font-normal"
-            placeholder="Label..."
-            autoFocus
-          />
-        ) : (
-          <span className="break-words max-w-[70%]">{label}</span>
-        )}
+        <div className="flex items-center gap-2 max-w-[75%]">
+          <div
+            {...dragHandleProps}
+            className={`cursor-grab active:cursor-grabbing transition-opacity duration-200 p-1 -ml-1
+              ${isEditing ? "opacity-0 pointer-events-none" : "opacity-0 group-hover:opacity-100 text-slate-500 hover:text-blue-400"}`}
+            title="Drag to reorder"
+          >
+            <GripIcon />
+          </div>
+
+          {isEditing ? (
+            <input
+              type="text"
+              value={tempLabel}
+              onChange={(e) => setTempLabel(e.target.value)}
+              className="bg-transparent border-b border-blue-400 text-blue-400 focus:outline-none w-full font-normal"
+              placeholder="Label..."
+              autoFocus
+            />
+          ) : (
+            <span className="break-words truncate">{label}</span>
+          )}
+        </div>
 
         <div className="flex items-center gap-2 pb-0.5">
           {isEditing ? (
