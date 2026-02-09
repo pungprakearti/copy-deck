@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
+import ReactGA from "react-ga4";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Deck from "./components/Deck";
-import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
-import "./App.css";
-import type { AppData } from "./types/deck";
 import Footer from "./components/Footer";
+import type { AppData } from "./types/deck";
+import "./App.css";
 
 const App = () => {
   const [appData, setAppData] = useState<AppData>(() => {
@@ -21,6 +22,18 @@ const App = () => {
   const minWidthForApp = 700;
 
   useEffect(() => {
+    // Google Analytics Initialization
+    const GA_ID = import.meta.env.VITE_GA_ID;
+
+    if (GA_ID) {
+      ReactGA.initialize(GA_ID);
+
+      ReactGA.send({
+        hitType: "pageview",
+        page: window.location.pathname + window.location.search,
+      });
+    }
+
     const handleResize = () => setWindowWidth(window.innerWidth);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import type { CardData } from "../types/deck";
+import ReactGA from "react-ga4";
 import { PencilIcon, TrashIcon, CheckIcon, XIcon, GripIcon } from "./Icons";
+import type { CardData } from "../types/deck";
 
 interface CardProps extends CardData {
   onSave: (newLabel: string, newContent: string) => void;
@@ -49,6 +50,13 @@ const Card = ({
       await navigator.clipboard.writeText(content);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+
+      // Track copy in GA
+      ReactGA.event({
+        category: "User Action",
+        action: "copy_snippet",
+        label: label,
+      });
     } catch (err) {
       console.error("Failed to copy!", err);
     }
