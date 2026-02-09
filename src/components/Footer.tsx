@@ -1,3 +1,5 @@
+import pkg from "../../package.json";
+
 const Footer = () => {
   return (
     <footer className="mt-auto p-6 bg-slate-900 flex flex-col items-center gap-4">
@@ -9,7 +11,7 @@ const Footer = () => {
         , while job searching in 2026.
       </p>
 
-      <div className="flex gap-4">
+      <div className="flex gap-8">
         <a
           href="https://github.com/pungprakearti/copy-deck"
           target="_blank"
@@ -34,6 +36,9 @@ const Footer = () => {
         >
           LinkedIn
         </a>
+        <span className="text-slate-500 text-xs font-normal">
+          Copy Deck v{pkg.version}
+        </span>
       </div>
     </footer>
   );

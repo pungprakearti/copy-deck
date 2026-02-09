@@ -1,73 +1,50 @@
-# React + TypeScript + Vite
+# 📋 Copy Deck
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Copy Deck** is a productivity tool designed to streamline the repetitive process of copying and pasting frequently used information—perfect for job applications, common code snippets, or administrative tasks.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+* **Dynamic Deck Management**: Create, rename, and reorder custom decks of information.
+* **Drag-and-Drop Interface**: Fully interactive reordering of both decks and individual cards, powered by `@hello-pangea/dnd`.
+* **Instant Copy**: Click-to-copy functionality with immediate visual feedback and success states.
+* **Local Persistence**: Data is automatically synchronized to `localStorage`, ensuring your decks persist across browser sessions.
+* **Desktop Guardrails**: Built-in responsive check to ensure the application is used in its intended desktop environment (screens > 700px).
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+---
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+* **Framework**: [React 18](https://reactjs.org/) (Vite-powered)
+* **Language**: [TypeScript](https://www.typescriptlang.org/) for strict type safety and modular architecture.
+* **Styling**: [Tailwind CSS](https://tailwindcss.com/) with a custom slate-themed dark UI.
+* **Drag & Drop**: [@hello-pangea/dnd](https://github.com/hello-pangea/dnd) for accessible, smooth reordering.
+* **Environment**: Developed on **WSL (Ubuntu)** using modern web standards.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📦 Installation & Setup
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+To run Copy Deck locally on your machine:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1. **Clone the repository**:
+   ```bash
+   git clone [https://github.com/pungprakearti/copy-deck.git](https://github.com/pungprakearti/copy-deck.git)
+   cd copy-deck
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2. **Install dependencies:**:
+   ```bash
+   npm install
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3. **Start the development server**:
+   ```bash
+   npm run dev
+
+## 👤 Author
+
+**Andrew Pungprakearti**
+
+[Biscuits in the Basket](https://www.biscuitsinthebasket.com)
+
+[LinkedIn](https://www.linkedin.com/in/andrewpungprakearti)

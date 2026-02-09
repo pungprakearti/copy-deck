@@ -17,6 +17,15 @@ const App = () => {
     () => Object.keys(appData)[0] || "",
   );
 
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const minWidthForApp = 700;
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     localStorage.setItem("copydeck-data", JSON.stringify(appData));
   }, [appData]);
@@ -164,6 +173,21 @@ const App = () => {
   return (
     <>
       <div className="min-h-screen w-full bg-slate-950">
+        {windowWidth < minWidthForApp && (
+          <div className="fixed inset-0 z-[9999] bg-slate-900 flex flex-col items-center justify-center p-10 text-center">
+            <div className="bg-slate-800 border border-blue-500/30 p-8 rounded-xl shadow-2xl max-w-sm">
+              <h2 className="text-blue-400 font-bold text-xl mb-4">
+                Desktop Experience Required
+              </h2>
+              <p className="text-slate-300 text-sm leading-relaxed">
+                Hello! This app is specifically designed for a desktop workflow.
+                Please view this on a screen wider than{" "}
+                <span className="text-white font-mono">{minWidthForApp}px</span>{" "}
+                for the bestest experience.
+              </p>
+            </div>
+          </div>
+        )}
         <div className="max-w-5xl mx-auto flex flex-col h-screen">
           <Navbar />
           <DragDropContext onDragEnd={onDragEnd}>
