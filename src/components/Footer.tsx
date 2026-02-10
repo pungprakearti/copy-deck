@@ -2,7 +2,7 @@ import pkg from "../../package.json";
 
 const Footer = () => {
   return (
-    <footer className="mt-auto p-6 bg-slate-900 flex flex-col items-center gap-4">
+    <footer className="mt-auto p-4 bg-slate-900 flex flex-col items-center gap-1">
       <p className="text-slate-400 text-xs font-normal">
         Copy Deck created by{" "}
         <span className="text-slate-200 font-semibold">
@@ -13,12 +13,12 @@ const Footer = () => {
 
       <div className="flex gap-8">
         <a
-          href="https://github.com/pungprakearti/copy-deck"
+          href="https://www.linkedin.com/in/andrewpungprakearti"
           target="_blank"
           rel="noreferrer"
           className="text-xs text-slate-500 hover:text-blue-400 transition-colors"
         >
-          GitHub
+          LinkedIn
         </a>
         <a
           href="https://www.biscuitsinthebasket.com"
@@ -29,17 +29,22 @@ const Footer = () => {
           Biscuits in the Basket
         </a>
         <a
-          href="https://www.linkedin.com/in/andrewpungprakearti"
+          href="https://github.com/pungprakearti"
           target="_blank"
           rel="noreferrer"
           className="text-xs text-slate-500 hover:text-blue-400 transition-colors"
         >
-          LinkedIn
+          GitHub
         </a>
-        <span className="text-slate-500 text-xs font-normal">
-          Copy Deck v{pkg.version}
-        </span>
       </div>
+      <a
+        href="https://github.com/pungprakearti/copy-deck"
+        target="_blank"
+        rel="noreferrer"
+        className="text-xs text-slate-500 hover:text-blue-400 transition-colors"
+      >
+        Copy Deck v{pkg.version}
+      </a>
     </footer>
   );
 };

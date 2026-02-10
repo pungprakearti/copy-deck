@@ -51,10 +51,13 @@ const Sidebar = ({
   ): React.CSSProperties => {
     if (!style) return {};
 
-    return {
-      ...(style as any),
-      width: snapshot.isDragging ? sidebarWidthPX : (style as any).width,
-    } as React.CSSProperties;
+    if (snapshot.isDragging) {
+      return {
+        ...style,
+        width: sidebarWidthPX,
+      } as React.CSSProperties;
+    }
+    return style as React.CSSProperties;
   };
 
   return (
