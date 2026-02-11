@@ -47,7 +47,54 @@ vi.mock("@hello-pangea/dnd", () => ({
     ),
 }));
 
-// 4. Mock Sidebar
+// 4. Mock Navbar
+vi.mock("../src/components/Navbar", () => ({
+  default: ({ onExport, onImport }: any) => (
+    <div>
+      <button onClick={onExport} data-testid="export-btn">
+        Export
+      </button>
+      <button
+        onClick={() => {
+          const file = new File(
+            ['{"TestDeck":{"id":"1","name":"TestDeck","rows":[]}}'],
+            "test.json",
+            { type: "application/json" },
+          );
+          onImport(file);
+        }}
+        data-testid="import-btn"
+      >
+        Import
+      </button>
+      <button
+        onClick={() => {
+          const file = new File(["{}"], "empty.json", {
+            type: "application/json",
+          });
+          onImport(file);
+        }}
+        data-testid="empty-import-btn"
+      >
+        Empty Import
+      </button>
+      <button
+        onClick={() => onImport(new File(["123"], "not-an-object.json"))}
+        data-testid="wrong-format-import-btn"
+      >
+        Wrong Format Import
+      </button>
+      <button
+        onClick={() => onImport(new File(["{invalid"], "bad.json"))}
+        data-testid="bad-import-btn"
+      >
+        Bad Import
+      </button>
+    </div>
+  ),
+}));
+
+// 5. Mock Sidebar
 vi.mock("../src/components/Sidebar", () => ({
   default: ({
     deckNames,
@@ -84,7 +131,7 @@ vi.mock("../src/components/Sidebar", () => ({
   ),
 }));
 
-// 5. Mock Deck
+// 6. Mock Deck
 vi.mock("../src/components/Deck", () => ({
   default: ({ deckData, onUpdateCard, onDeleteCard, onAdd }: any) => (
     <div>
@@ -177,16 +224,11 @@ describe("App Component", () => {
     });
 
     it("initializes with empty activeDeckName when appData is empty", () => {
-      // Set localStorage to an empty object to trigger the empty string fallback
       window.localStorage.setItem("copydeck-data", JSON.stringify({}));
       render(<App />);
-
-      // With no decks, there should be no active deck shown
       const activeDecks = screen.queryAllByText((content, element) => {
         return element?.className?.includes("active") || false;
       });
-
-      // Verify no deck is marked as active (empty string case)
       expect(activeDecks.length).toBe(0);
     });
   });
@@ -270,11 +312,8 @@ describe("App Component", () => {
   });
 
   it("adds a new deck and sets it as active", async () => {
-    // FIX 1: Start with empty localStorage so defaultAppData doesn't load
-    // The app will load defaultAppData (3 decks), so the new deck will be "New Deck 4"
     render(<App />);
     fireEvent.click(screen.getByText(/Add New Deck/i));
-    // The default data has 3 decks, so the next one should be "New Deck 4"
     expect(await screen.findByText("New Deck 4")).toBeInTheDocument();
   });
 
@@ -366,14 +405,12 @@ describe("App Component", () => {
       };
       window.localStorage.setItem("copydeck-data", JSON.stringify(testData));
       render(<App />);
-
       act(() => {
         triggerDragEnd({
           destination: { index: 1, droppableId: "deck-list" },
           source: { index: 0, droppableId: "deck-list" },
         });
       });
-
       await waitFor(() => {
         const stored = JSON.parse(
           window.localStorage.getItem("copydeck-data") || "{}",
@@ -388,15 +425,12 @@ describe("App Component", () => {
       window.localStorage.setItem("copydeck-data", JSON.stringify(testData));
       render(<App />);
       const setItemSpy = vi.spyOn(window.localStorage, "setItem");
-
       act(() => {
         triggerDragEnd({
           destination: { index: 1, droppableId: "unknown-id" },
           source: { index: 0, droppableId: "unknown-id" },
         });
       });
-
-      // Since it's not sidebar-decks or deck-list, no setAppData happens
       expect(setItemSpy).not.toHaveBeenCalled();
     });
   });
@@ -420,20 +454,12 @@ describe("App Component", () => {
   });
 
   it("handleUpdateCard: returns early if no active deck name exists", async () => {
-    // FIX 2: We need to start with no decks, so we delete all decks first
     const testData = { TestDeck: { id: "1", name: "TestDeck", rows: [] } };
     window.localStorage.setItem("copydeck-data", JSON.stringify(testData));
     window.confirm = vi.fn().mockReturnValue(true);
-
     render(<App />);
-
-    // Delete the only deck to leave no active deck
     fireEvent.click(await screen.findByTestId("delete-deck-TestDeck"));
-
-    // Now try to update a card when there's no active deck
     fireEvent.click(screen.getByTestId("force-update-btn"));
-
-    // Storage should now be empty after deletion
     const stored = JSON.parse(
       window.localStorage.getItem("copydeck-data") || "{}",
     );
@@ -473,19 +499,12 @@ describe("App Component", () => {
   });
 
   it("handleAddCard: creates a General deck if no decks exist", async () => {
-    // FIX 3: Start with a deck and delete it to test the "no decks" scenario
     const testData = { TestDeck: { id: "1", name: "TestDeck", rows: [] } };
     window.localStorage.setItem("copydeck-data", JSON.stringify(testData));
     window.confirm = vi.fn().mockReturnValue(true);
-
     render(<App />);
-
-    // Delete the only deck
     fireEvent.click(await screen.findByTestId("delete-deck-TestDeck"));
-
-    // Now click add card when there are no decks
     fireEvent.click(screen.getByTestId("add-card-btn"));
-
     await waitFor(() => {
       const stored = JSON.parse(
         window.localStorage.getItem("copydeck-data") || "{}",
@@ -521,6 +540,94 @@ describe("App Component", () => {
       );
       expect(stored.Stay).toBeDefined();
       expect(stored.NewName).toBeDefined();
+    });
+  });
+
+  describe("Data Import/Export", () => {
+    it("handleExportData: creates a download link and triggers click", () => {
+      const createObjectURLMock = vi.fn().mockReturnValue("blob:url");
+      const revokeObjectURLMock = vi.fn();
+      window.URL.createObjectURL = createObjectURLMock;
+      window.URL.revokeObjectURL = revokeObjectURLMock;
+
+      const originalCreateElement = document.createElement.bind(document);
+      const link = originalCreateElement("a");
+      const clickSpy = vi.spyOn(link, "click").mockImplementation(() => {});
+
+      const createElementSpy = vi
+        .spyOn(document, "createElement")
+        .mockImplementation((tagName) => {
+          if (tagName === "a") return link;
+          return originalCreateElement(tagName);
+        });
+
+      render(<App />);
+      fireEvent.click(screen.getByTestId("export-btn"));
+
+      expect(createElementSpy).toHaveBeenCalledWith("a");
+      expect(link.download).toBe("copyDeckData.json");
+      expect(clickSpy).toHaveBeenCalled();
+
+      createElementSpy.mockRestore();
+    });
+
+    it("handleImportData: updates appData and active deck on successful import", async () => {
+      render(<App />);
+      fireEvent.click(screen.getByTestId("import-btn"));
+
+      await waitFor(() => {
+        const stored = JSON.parse(
+          window.localStorage.getItem("copydeck-data") || "{}",
+        );
+        expect(stored.TestDeck).toBeDefined();
+        expect(screen.getByText("TestDeck")).toBeInTheDocument();
+      });
+    });
+
+    it("handleImportData: sets active deck to empty when importing empty data", async () => {
+      const initialData = { Existing: { id: "0", name: "Existing", rows: [] } };
+      window.localStorage.setItem("copydeck-data", JSON.stringify(initialData));
+      render(<App />);
+      expect(screen.getByText("Existing")).toBeInTheDocument();
+
+      fireEvent.click(screen.getByTestId("empty-import-btn"));
+
+      await waitFor(() => {
+        const stored = JSON.parse(
+          window.localStorage.getItem("copydeck-data") || "{}",
+        );
+        expect(Object.keys(stored).length).toBe(0);
+        const activeDecks = screen.queryAllByText((content, element) => {
+          return element?.className?.includes("active") || false;
+        });
+        expect(activeDecks.length).toBe(0);
+      });
+    });
+
+    it("handleImportData: throws error and alerts when data is not an object", async () => {
+      const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
+      render(<App />);
+
+      fireEvent.click(screen.getByTestId("wrong-format-import-btn"));
+
+      await waitFor(() => {
+        expect(alertSpy).toHaveBeenCalled();
+        const lastCall = alertSpy.mock.calls[0][0];
+        expect(lastCall).toMatch(/Error importing file/i);
+      });
+      alertSpy.mockRestore();
+    });
+
+    it("handleImportData: alerts on invalid JSON data", async () => {
+      const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
+      render(<App />);
+
+      fireEvent.click(screen.getByTestId("bad-import-btn"));
+
+      await waitFor(() => {
+        expect(alertSpy).toHaveBeenCalled();
+      });
+      alertSpy.mockRestore();
     });
   });
 });

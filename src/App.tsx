@@ -152,6 +152,46 @@ const App = () => {
     }
   };
 
+  const handleExportData = () => {
+    const dataStr = JSON.stringify(appData, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "copyDeckData.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportData = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const importedData = JSON.parse(content) as AppData;
+
+        // Validate the imported data structure
+        if (typeof importedData !== "object" || importedData === null) {
+          throw new Error("Invalid data format");
+        }
+
+        setAppData(importedData);
+        const firstDeckName = Object.keys(importedData)[0];
+        if (firstDeckName) {
+          setActiveDeckName(firstDeckName);
+        }
+      } catch (error) {
+        alert(
+          "Error importing file. Please ensure it's a valid copyDeckData.json file.",
+        );
+        console.error("Import error:", error);
+      }
+    };
+    reader.readAsText(file);
+  };
+
   const onDragEnd = (result: DropResult) => {
     const { destination, source } = result;
     if (!destination) return;
@@ -207,7 +247,7 @@ const App = () => {
           </div>
         )}
         <div className="max-w-5xl mx-auto flex flex-col h-screen">
-          <Navbar />
+          <Navbar onExport={handleExportData} onImport={handleImportData} />
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="flex flex-row flex-1 overflow-hidden">
               <Sidebar
