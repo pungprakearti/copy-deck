@@ -1,24 +1,31 @@
-import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import "@testing-library/jest-dom";
+import { render, screen } from "@testing-library/react";
 import Navbar from "../../src/components/Navbar";
 
 describe("Navbar Component", () => {
-  it("renders the branding title correctly", () => {
+  it("renders the main title and both navigation links", () => {
     render(<Navbar />);
 
+    // Check if the main title exists
     const titleElement = screen.getByText(/COPY DECK/i);
     expect(titleElement).toBeInTheDocument();
+
+    // Check if the Import link exists and has the correct href
+    const importLink = screen.getByRole("link", { name: /import/i });
+    expect(importLink).toBeInTheDocument();
+    expect(importLink).toHaveAttribute("href", "#import");
+
+    // Check if the Export link exists and has the correct href
+    const exportLink = screen.getByRole("link", { name: /export/i });
+    expect(exportLink).toBeInTheDocument();
+    expect(exportLink).toHaveAttribute("href", "#export");
   });
 
-  it("contains the correct styling classes for branding", () => {
+  it("contains the correct layout classes for the nav element", () => {
     render(<Navbar />);
 
-    const navbarContainer = screen.getByText(/COPY DECK/i);
-
-    // Verifying the specific Orbitron font and tracking for 100% style coverage
-    expect(navbarContainer).toHaveClass("font-orbitron-black");
-    expect(navbarContainer).toHaveClass("tracking-tighter");
-    expect(navbarContainer).toHaveClass("bg-slate-400");
+    // This ensures the actual nav tag is rendered and verified
+    const navElement = screen.getByRole("navigation");
+    expect(navElement).toHaveClass("grid", "grid-cols-3");
   });
 });
