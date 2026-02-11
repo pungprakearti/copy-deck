@@ -77,8 +77,8 @@ const Card = ({
 
   return (
     <div className="group flex flex-col gap-1 w-full relative">
-      <div className="flex justify-between items-end text-sm font-semibold text-slate-400 px-1 min-h-[1.5rem]">
-        <div className="flex items-center gap-2 max-w-[75%]">
+      <div className="flex justify-between items-end text-sm font-semibold text-slate-400 px-1 min-h-[1.5rem] gap-4">
+        <div className="flex items-end gap-2 flex-grow">
           <div
             {...dragHandleProps}
             className={`cursor-grab active:cursor-grabbing transition-opacity duration-200 p-1 -ml-1
@@ -102,11 +102,11 @@ const Card = ({
               autoFocus
             />
           ) : (
-            <span className="break-words truncate">{label}</span>
+            <span className="break-words leading-tight pb-1">{label}</span>
           )}
         </div>
 
-        <div className="flex items-center gap-2 pb-0.5">
+        <div className="flex items-center gap-2 flex-shrink-0 pb-1">
           {isEditing ? (
             <div className="flex items-center gap-2">
               <button

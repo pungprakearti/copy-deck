@@ -5,13 +5,14 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Deck from "./components/Deck";
 import Footer from "./components/Footer";
+import { defaultAppData } from "./copy";
 import type { AppData } from "./types/deck";
 import "./App.css";
 
 const App = () => {
   const [appData, setAppData] = useState<AppData>(() => {
     const saved = localStorage.getItem("copydeck-data");
-    return saved ? JSON.parse(saved) : {};
+    return saved ? JSON.parse(saved) : defaultAppData;
   });
 
   const [activeDeckName, setActiveDeckName] = useState(
@@ -22,12 +23,9 @@ const App = () => {
   const minWidthForApp = 700;
 
   useEffect(() => {
-    // Google Analytics Initialization
     const GA_ID = import.meta.env.VITE_GA_ID;
-
     if (GA_ID) {
       ReactGA.initialize(GA_ID);
-
       ReactGA.send({
         hitType: "pageview",
         page: window.location.pathname + window.location.search,
@@ -50,6 +48,7 @@ const App = () => {
     newContent: string,
   ) => {
     if (!activeDeckName) return;
+
     setAppData((prev) => ({
       ...prev,
       [activeDeckName]: {
@@ -69,12 +68,13 @@ const App = () => {
   };
 
   const handleAddCard = () => {
+    const newRow = {
+      id: crypto.randomUUID(),
+      columns: [{ id: crypto.randomUUID(), label: "New Label", content: "" }],
+    };
+
     if (!activeDeckName) {
       const firstDeckName = "General";
-      const newRow = {
-        id: crypto.randomUUID(),
-        columns: [{ id: crypto.randomUUID(), label: "New Label", content: "" }],
-      };
       setAppData({
         [firstDeckName]: {
           id: crypto.randomUUID(),
@@ -86,10 +86,6 @@ const App = () => {
       return;
     }
 
-    const newRow = {
-      id: crypto.randomUUID(),
-      columns: [{ id: crypto.randomUUID(), label: "New Label", content: "" }],
-    };
     setAppData((prev) => ({
       ...prev,
       [activeDeckName]: {
@@ -115,25 +111,35 @@ const App = () => {
     const newDeckName = `New Deck ${Object.keys(appData).length + 1}`;
     setAppData((prev) => ({
       ...prev,
-      [newDeckName]: { id: crypto.randomUUID(), name: newDeckName, rows: [] },
+      [newDeckName]: {
+        id: crypto.randomUUID(),
+        name: newDeckName,
+        rows: [],
+      },
     }));
     setActiveDeckName(newDeckName);
   };
 
   const handleRenameDeck = (oldName: string, newName: string) => {
     if (!newName || oldName === newName) return;
+
     setAppData((prev) => {
-      const entries = Object.entries(prev);
-      const newEntries = entries.map(([key, value]) =>
-        key === oldName ? [newName, value] : [key, value],
-      );
-      return Object.fromEntries(newEntries);
+      const newAppData: AppData = {};
+      Object.keys(prev).forEach((key) => {
+        if (key === oldName) {
+          newAppData[newName] = { ...prev[oldName], name: newName };
+        } else {
+          newAppData[key] = prev[key];
+        }
+      });
+      return newAppData;
     });
+
     if (activeDeckName === oldName) setActiveDeckName(newName);
   };
 
   const handleDeleteDeck = (name: string) => {
-    if (window.confirm(`Delete "${name}" and all its cards?`)) {
+    if (window.confirm(`Delete '${name}' and all its cards?`)) {
       const deckNames = Object.keys(appData);
       const remainingDecks = deckNames.filter((k) => k !== name);
 
@@ -142,7 +148,6 @@ const App = () => {
         delete newData[name];
         return newData;
       });
-
       setActiveDeckName(remainingDecks[0] || "");
     }
   };
